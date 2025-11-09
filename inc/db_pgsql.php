@@ -1,4 +1,7 @@
 <?php
+if (getenv('MYSQL_EMULATE') == '1') {
+    $this->write_query("SET SESSION sql_mode = 'PIPES_AS_CONCAT,NO_BACKSLASH_ESCAPES'");
+}
 /**
  * MyBB 1.8
  * Copyright 2014 MyBB Group, All Rights Reserved
