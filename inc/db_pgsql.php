@@ -2,10 +2,6 @@
 /**
  * MyBB 1.8
  * Copyright 2014 MyBB Group, All Rights Reserved
- *
- * Website: http://www.mybb.com
- * License: http://www.mybb.com/about/license
- *
  */
 
 class DB_PgSQL implements DB_Base
@@ -33,22 +29,21 @@ class DB_PgSQL implements DB_Base
     public $query_time = 0;
     public $last_result;
 
-    /**
-     * Connect to the database server.
-     */
     function connect($config)
     {
-        // ... [your original connect() code] ...
+        // ... [all your existing connect() code] ...
 
-        // === FIX: Enable MySQL-style backticks AFTER connection ===
-        if (getenv('MYSQL_EMULATE') === '1' || (defined('IN_INSTALLER') && IN_INSTALLER)) {
-            $this->write_query("SET standard_conforming_strings = off");
-            $this->write_query("SET backslash_quote = on");
+        // Successful connection? Set PostgreSQL to accept MySQL backticks
+        if ($this->read_link) {
+            if (getenv('MYSQL_EMULATE') === '1' || (defined('IN_INSTALLER') && IN_INSTALLER)) {
+                $this->write_query("SET standard_conforming_strings = off");
+                $this->write_query("SET backslash_quote = on");
+            }
         }
-        // =======================================================
 
         $this->current_link = &$this->read_link;
         return $this->read_link;
     }
 
-    // ... [rest of your methods: query(), write_query(), insert_id(), etc.] ...
+    // ... [rest of your methods: query(), write_query(), etc.] ...
+}
