@@ -1,0 +1,12 @@
+version: v1
+services:
+  - name: mybb
+    ports:
+      - port: 8080
+        protocol: HTTP
+    build:
+      dockerfile: Dockerfile
+    env:
+      - key: DATABASE_URL
+        from: service
+        service: mybb-db  # ← your DB name
