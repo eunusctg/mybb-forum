@@ -1,14 +1,5 @@
 <?php
 /**
- * MyBB PostgreSQL driver – back-tick compatibility for installer
- */
-if (getenv('MYSQL_EMULATE') === '1' || (defined('IN_INSTALLER') && IN_INSTALLER)) {
-    // Tell PostgreSQL to treat back-ticks as identifier delimiters (MySQL style)
-    $this->write_query("SET standard_conforming_strings = off");
-    $this->write_query("SET backslash_quote = on");
-}
-
-/**
  * MyBB 1.8
  * Copyright 2014 MyBB Group, All Rights Reserved
  *
@@ -19,9 +10,6 @@ if (getenv('MYSQL_EMULATE') === '1' || (defined('IN_INSTALLER') && IN_INSTALLER)
 
 class DB_PgSQL implements DB_Base
 {
-    /* --------------------------------------------------------------
-     *  ALL THE ORIGINAL CODE YOU POSTED BELOW THIS LINE
-     * -------------------------------------------------------------- */
     public $title = "PostgreSQL";
     public $short_title = "PostgreSQL";
     public $type;
@@ -45,4 +33,22 @@ class DB_PgSQL implements DB_Base
     public $query_time = 0;
     public $last_result;
 
-    /* … (all the methods you already have – connect(), query(), write_query(), etc.) … */
+    /**
+     * Connect to the database server.
+     */
+    function connect($config)
+    {
+        // ... [your original connect() code] ...
+
+        // === FIX: Enable MySQL-style backticks AFTER connection ===
+        if (getenv('MYSQL_EMULATE') === '1' || (defined('IN_INSTALLER') && IN_INSTALLER)) {
+            $this->write_query("SET standard_conforming_strings = off");
+            $this->write_query("SET backslash_quote = on");
+        }
+        // =======================================================
+
+        $this->current_link = &$this->read_link;
+        return $this->read_link;
+    }
+
+    // ... [rest of your methods: query(), write_query(), insert_id(), etc.] ...
